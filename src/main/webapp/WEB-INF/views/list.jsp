@@ -75,6 +75,7 @@
                         <c:if test="${a.overdue}"><span class="overdue-tag">Overdue</span></c:if>
                     </td>
                     <td>
+                                            <a href="edit?id=${a.id}" class="btn-link">Edit</a>
                         <form method="post" action="applications" class="inline">
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="id" value="${a.id}">

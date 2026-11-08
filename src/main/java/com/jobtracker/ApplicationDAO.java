@@ -113,4 +113,31 @@ public class ApplicationDAO {
             ps.executeUpdate();
         }
     }
+    public JobApplication getById(int id) throws Exception {
+        String sql = "SELECT id, company, role, applied_date, status, follow_up_date "
+                + "FROM applications WHERE id = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
+            }
+        }
+        return null;
+    }
+
+    public void update(int id, String company, String role, String status,
+                       java.time.LocalDate followUpDate) throws Exception {
+        String sql = "UPDATE applications SET company = ?, role = ?, status = ?, "
+                + "follow_up_date = ? WHERE id = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, company);
+            ps.setString(2, role);
+            ps.setString(3, status);
+            ps.setDate(4, java.sql.Date.valueOf(followUpDate));
+            ps.setInt(5, id);
+            ps.executeUpdate();
+        }
+    }
 }

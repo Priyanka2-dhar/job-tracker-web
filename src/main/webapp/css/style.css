@@ -78,3 +78,16 @@ form.inline { display: inline; }
 .badge.Interview { background: #fef3c7; color: #92400e; }
 .badge.Offer     { background: #d1fae5; color: #065f46; }
 .badge.Rejected  { background: #fee2e2; color: #991b1b; }
+a.btn-link {
+    display: inline-block; padding: 8px 14px; border-radius: 6px;
+    background: #e5e7eb; color: #1f2937; text-decoration: none; margin-right: 6px;
+}
+.error-msg {
+    background: #fee2e2; color: #991b1b; padding: 10px 14px;
+    border-radius: 6px; margin-bottom: 12px;
+}
+label { display: block; margin: 14px 0 4px; font-weight: 600; }
+.form-card input[type=text], .form-card input[type=date], .form-card select {
+    width: 100%; max-width: 420px; padding: 8px 10px;
+    border: 1px solid #d1d5db; border-radius: 6px;
+}
