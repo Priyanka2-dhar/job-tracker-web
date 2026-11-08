@@ -91,3 +91,14 @@ label { display: block; margin: 14px 0 4px; font-weight: 600; }
     width: 100%; max-width: 420px; padding: 8px 10px;
     border: 1px solid #d1d5db; border-radius: 6px;
 }
+.navbar .who { color: #94a3b8; margin-left: 20px; font-size: 14px; }
+.logout-form { display: inline; margin-left: 16px; }
+button.link-btn {
+    background: transparent; color: #cbd5e1; padding: 0;
+    border: none; cursor: pointer; font-size: inherit;
+}
+button.link-btn:hover { color: white; opacity: 1; }
+.form-card input[type=password] {
+    width: 100%; max-width: 420px; padding: 8px 10px;
+    border: 1px solid #d1d5db; border-radius: 6px;
+}

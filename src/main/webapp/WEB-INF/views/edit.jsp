@@ -11,7 +11,13 @@
 <body>
     <div class="navbar">
         <span class="brand">Job Application Tracker</span>
-        <span><a href="applications">Dashboard</a></span>
+                <span>
+                    <a href="applications">Dashboard</a>
+                    <span class="who">Signed in as <c:out value="${sessionScope.user}"/></span>
+                    <form method="post" action="logout" class="logout-form">
+                        <button type="submit" class="link-btn">Log out</button>
+                    </form>
+                </span>
     </div>
 
     <div class="container">
