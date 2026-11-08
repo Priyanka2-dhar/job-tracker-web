@@ -26,4 +26,10 @@ public class JobApplication {
     public LocalDate getAppliedDate() { return appliedDate; }
     public String getStatus() { return status; }
     public LocalDate getFollowUpDate() { return followUpDate; }
+
+    // True when the application is still open and its follow-up date has passed
+    public boolean isOverdue() {
+        boolean open = "Applied".equals(status) || "Interview".equals(status);
+        return open && followUpDate.isBefore(LocalDate.now());
+    }
 }
