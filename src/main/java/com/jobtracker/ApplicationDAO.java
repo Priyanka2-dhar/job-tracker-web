@@ -4,9 +4,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ApplicationDAO {
+
+    private JobApplication mapRow(ResultSet rs) throws Exception {
+        return new JobApplication(
+                rs.getInt("id"),
+                rs.getString("company"),
+                rs.getString("role"),
+                rs.getDate("applied_date").toLocalDate(),
+                rs.getString("status"),
+                rs.getDate("follow_up_date").toLocalDate());
+    }
 
     public List<JobApplication> getAll() throws Exception {
         List<JobApplication> list = new ArrayList<>();
@@ -15,17 +27,42 @@ public class ApplicationDAO {
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                list.add(new JobApplication(
-                        rs.getInt("id"),
-                        rs.getString("company"),
-                        rs.getString("role"),
-                        rs.getDate("applied_date").toLocalDate(),
-                        rs.getString("status"),
-                        rs.getDate("follow_up_date").toLocalDate()));
-            }
+            while (rs.next()) list.add(mapRow(rs));
         }
         return list;
+    }
+
+    // Open applications (Applied / Interview) whose follow-up date is today or earlier
+    public List<JobApplication> getFollowUps() throws Exception {
+        List<JobApplication> list = new ArrayList<>();
+        String sql = "SELECT id, company, role, applied_date, status, follow_up_date "
+                + "FROM applications "
+                + "WHERE status IN ('Applied', 'Interview') AND follow_up_date <= CURDATE() "
+                + "ORDER BY follow_up_date";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) list.add(mapRow(rs));
+        }
+        return list;
+    }
+
+    // How many applications are in each status
+    public Map<String, Integer> getStatusCounts() throws Exception {
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        counts.put("Applied", 0);
+        counts.put("Interview", 0);
+        counts.put("Offer", 0);
+        counts.put("Rejected", 0);
+        String sql = "SELECT status, COUNT(*) AS total FROM applications GROUP BY status";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                counts.put(rs.getString("status"), rs.getInt("total"));
+            }
+        }
+        return counts;
     }
 
     public void add(String company, String role) throws Exception {

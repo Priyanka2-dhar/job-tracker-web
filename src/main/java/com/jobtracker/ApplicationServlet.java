@@ -18,7 +18,11 @@ public class ApplicationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            req.setAttribute("applications", dao.getAll());
+            List<JobApplication> all = dao.getAll();
+            req.setAttribute("applications", all);
+            req.setAttribute("total", all.size());
+            req.setAttribute("counts", dao.getStatusCounts());
+            req.setAttribute("followUps", dao.getFollowUps());
         } catch (Exception e) {
             throw new ServletException(e);
         }
