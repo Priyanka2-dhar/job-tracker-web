@@ -16,6 +16,10 @@ public class EditServlet extends HttpServlet {
     private final ApplicationDAO dao = new ApplicationDAO();
     private static final List<String> STATUSES = List.of("Applied", "Interview", "Rejected", "Offer");
 
+    private static String nz(String s) {
+        return s == null ? "" : s;
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -27,7 +31,8 @@ public class EditServlet extends HttpServlet {
                 return;
             }
             show(req, resp, id, a.getCompany(), a.getRole(), a.getStatus(),
-                    a.getFollowUpDate().toString(), null);
+                    a.getFollowUpDate().toString(), nz(a.getJobLink()),
+                    nz(a.getLocation()), nz(a.getNotes()), null);
         } catch (NumberFormatException e) {
             resp.sendRedirect("applications");
         } catch (Exception e) {
@@ -51,6 +56,9 @@ public class EditServlet extends HttpServlet {
         String role = req.getParameter("role");
         String status = req.getParameter("status");
         String followUp = req.getParameter("followUp");
+        String jobLink = Validation.trimToNull(req.getParameter("jobLink"));
+        String location = Validation.trimToNull(req.getParameter("location"));
+        String notes = Validation.trimToNull(req.getParameter("notes"));
 
         String error = null;
         LocalDate followUpDate = null;
@@ -60,6 +68,12 @@ public class EditServlet extends HttpServlet {
             error = "Role cannot be empty.";
         } else if (company.trim().length() > 100 || role.trim().length() > 100) {
             error = "Company and role must be 100 characters or fewer.";
+        } else if (location != null && location.length() > 100) {
+            error = "Location must be 100 characters or fewer.";
+        } else if (notes != null && notes.length() > 1000) {
+            error = "Notes must be 1000 characters or fewer.";
+        } else if (!Validation.validLink(jobLink)) {
+            error = "Job link must start with http:// or https:// and be under 500 characters.";
         } else if (!STATUSES.contains(status)) {
             error = "Please choose a valid status.";
         } else {
@@ -71,13 +85,14 @@ public class EditServlet extends HttpServlet {
         }
 
         if (error != null) {
-            show(req, resp, id, company == null ? "" : company, role == null ? "" : role,
-                    status == null ? "" : status, followUp == null ? "" : followUp, error);
+            show(req, resp, id, nz(company), nz(role), nz(status), nz(followUp),
+                    nz(jobLink), nz(location), nz(notes), error);
             return;
         }
 
         try {
-            dao.update(id, company.trim(), role.trim(), status, followUpDate);
+            dao.update(id, company.trim(), role.trim(), status, followUpDate,
+                    jobLink, location, notes);
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -85,13 +100,17 @@ public class EditServlet extends HttpServlet {
     }
 
     private void show(HttpServletRequest req, HttpServletResponse resp, int id,
-                      String company, String role, String status, String followUp, String error)
+                      String company, String role, String status, String followUp,
+                      String jobLink, String location, String notes, String error)
             throws ServletException, IOException {
         req.setAttribute("id", id);
         req.setAttribute("company", company);
         req.setAttribute("role", role);
         req.setAttribute("status", status);
         req.setAttribute("followUp", followUp);
+        req.setAttribute("jobLink", jobLink);
+        req.setAttribute("location", location);
+        req.setAttribute("notes", notes);
         req.setAttribute("error", error);
         req.getRequestDispatcher("/WEB-INF/views/edit.jsp").forward(req, resp);
     }

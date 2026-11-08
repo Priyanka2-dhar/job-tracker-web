@@ -11,13 +11,13 @@
 <body>
     <div class="navbar">
         <span class="brand">Job Application Tracker</span>
-                <span>
-                    <a href="applications">Dashboard</a>
-                    <span class="who">Signed in as <c:out value="${sessionScope.user}"/></span>
-                    <form method="post" action="logout" class="logout-form">
-                        <button type="submit" class="link-btn">Log out</button>
-                    </form>
-                </span>
+        <span>
+            <a href="applications">Dashboard</a>
+            <span class="who">Signed in as <c:out value="${sessionScope.user}"/></span>
+            <form method="post" action="logout" class="logout-form">
+                <button type="submit" class="link-btn">Log out</button>
+            </form>
+        </span>
     </div>
 
     <div class="container">
@@ -47,6 +47,19 @@
 
                 <label>Follow-up date</label>
                 <input type="date" name="followUp" value="<c:out value='${followUp}'/>" required>
+
+                <label>Location (optional)</label>
+                <input type="text" name="location" maxlength="100"
+                       placeholder="e.g. Bangalore"
+                       value="<c:out value='${location}'/>">
+
+                <label>Job link (optional)</label>
+                <input type="text" name="jobLink" maxlength="500"
+                       placeholder="https://..."
+                       value="<c:out value='${jobLink}'/>">
+
+                <label>Notes (optional)</label>
+                <textarea name="notes" rows="4" maxlength="1000"><c:out value="${notes}"/></textarea>
 
                 <p style="margin-top:20px;">
                     <button type="submit">Save changes</button>

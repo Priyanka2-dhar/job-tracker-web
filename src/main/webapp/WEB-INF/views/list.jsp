@@ -11,13 +11,13 @@
 <body>
     <div class="navbar">
         <span class="brand">Job Application Tracker</span>
-                <span>
-                    <a href="applications">Dashboard</a>
-                    <span class="who">Signed in as <c:out value="${sessionScope.user}"/></span>
-                    <form method="post" action="logout" class="logout-form">
-                        <button type="submit" class="link-btn">Log out</button>
-                    </form>
-                </span>
+        <span>
+            <a href="applications">Dashboard</a>
+            <span class="who">Signed in as <c:out value="${sessionScope.user}"/></span>
+            <form method="post" action="logout" class="logout-form">
+                <button type="submit" class="link-btn">Log out</button>
+            </form>
+        </span>
     </div>
 
     <div class="container">
@@ -49,9 +49,10 @@
                 <button type="submit">Add application</button>
             </form>
         </div>
+
         <div class="card">
             <form method="get" action="applications">
-                <input type="text" name="q" placeholder="Search company or role"
+                <input type="text" name="q" placeholder="Search company, role or location"
                        value="<c:out value='${q}'/>">
                 <select name="status">
                     <option value="">All statuses</option>
@@ -64,24 +65,35 @@
                 <a href="applications" style="margin-left:10px;">Clear</a>
             </form>
         </div>
+
         <h2>All applications</h2>
         <table>
             <tr>
-                <th>ID</th><th>Company</th><th>Role</th><th>Applied</th>
+                <th>ID</th><th>Company</th><th>Role</th><th>Location</th><th>Applied</th>
                 <th>Status</th><th>Follow up</th><th>Actions</th>
             </tr>
             <c:forEach var="a" items="${applications}">
                 <tr class="${a.overdue ? 'overdue' : ''}">
                     <td>${a.id}</td>
-                    <td><c:out value="${a.company}"/></td>
+                    <td>
+                        <c:out value="${a.company}"/>
+                        <c:if test="${not empty a.jobLink}">
+                            <a class="job-link" href="<c:out value='${a.jobLink}'/>"
+                               target="_blank" rel="noopener noreferrer">Link</a>
+                        </c:if>
+                        <c:if test="${not empty a.notes}">
+                            <span class="note-tag" title="<c:out value='${a.notes}'/>">Notes</span>
+                        </c:if>
+                    </td>
                     <td><c:out value="${a.role}"/></td>
+                    <td><c:out value="${a.location}"/></td>
                     <td>${a.appliedDate}</td>
                     <td><span class="badge ${a.status}">${a.status}</span></td>
                     <td>${a.followUpDate}
                         <c:if test="${a.overdue}"><span class="overdue-tag">Overdue</span></c:if>
                     </td>
                     <td>
-                                            <a href="edit?id=${a.id}" class="btn-link">Edit</a>
+                        <a href="edit?id=${a.id}" class="btn-link">Edit</a>
                         <form method="post" action="applications" class="inline">
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="id" value="${a.id}">
@@ -103,9 +115,9 @@
                 </tr>
             </c:forEach>
         </table>
-                <c:if test="${empty applications}">
-                    <p class="empty">No applications match your search.</p>
-                </c:if>
+        <c:if test="${empty applications}">
+            <p class="empty">No applications match your search.</p>
+        </c:if>
     </div>
 </body>
 </html>
