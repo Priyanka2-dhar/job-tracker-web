@@ -27,4 +27,34 @@ public class ApplicationDAO {
         }
         return list;
     }
+
+    public void add(String company, String role) throws Exception {
+        String sql = "INSERT INTO applications (company, role, applied_date, status, follow_up_date) "
+                + "VALUES (?, ?, CURDATE(), 'Applied', DATE_ADD(CURDATE(), INTERVAL 7 DAY))";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, company);
+            ps.setString(2, role);
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateStatus(int id, String status) throws Exception {
+        String sql = "UPDATE applications SET status = ? WHERE id = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        }
+    }
+
+    public void delete(int id) throws Exception {
+        String sql = "DELETE FROM applications WHERE id = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
 }
