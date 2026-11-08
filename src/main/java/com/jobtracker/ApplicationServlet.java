@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/applications")
 public class ApplicationServlet extends HttpServlet {
@@ -17,12 +18,22 @@ public class ApplicationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        String q = req.getParameter("q");
+        String status = req.getParameter("status");
+        if (q == null) q = "";
+        if (status == null || !STATUSES.contains(status)) status = "";
+
         try {
-            List<JobApplication> all = dao.getAll();
-            req.setAttribute("applications", all);
-            req.setAttribute("total", all.size());
-            req.setAttribute("counts", dao.getStatusCounts());
+            Map<String, Integer> counts = dao.getStatusCounts();
+            int total = counts.values().stream().mapToInt(Integer::intValue).sum();
+
+            req.setAttribute("applications", dao.search(q, status));
+            req.setAttribute("counts", counts);
+            req.setAttribute("total", total);
             req.setAttribute("followUps", dao.getFollowUps());
+            req.setAttribute("q", q);
+            req.setAttribute("selectedStatus", status);
         } catch (Exception e) {
             throw new ServletException(e);
         }

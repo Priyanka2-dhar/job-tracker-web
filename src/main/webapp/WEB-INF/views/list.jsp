@@ -43,7 +43,21 @@
                 <button type="submit">Add application</button>
             </form>
         </div>
-
+        <div class="card">
+            <form method="get" action="applications">
+                <input type="text" name="q" placeholder="Search company or role"
+                       value="<c:out value='${q}'/>">
+                <select name="status">
+                    <option value="">All statuses</option>
+                    <option value="Applied" ${selectedStatus == 'Applied' ? 'selected' : ''}>Applied</option>
+                    <option value="Interview" ${selectedStatus == 'Interview' ? 'selected' : ''}>Interview</option>
+                    <option value="Offer" ${selectedStatus == 'Offer' ? 'selected' : ''}>Offer</option>
+                    <option value="Rejected" ${selectedStatus == 'Rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+                <button type="submit">Search</button>
+                <a href="applications" style="margin-left:10px;">Clear</a>
+            </form>
+        </div>
         <h2>All applications</h2>
         <table>
             <tr>
@@ -82,6 +96,9 @@
                 </tr>
             </c:forEach>
         </table>
+                <c:if test="${empty applications}">
+                    <p class="empty">No applications match your search.</p>
+                </c:if>
     </div>
 </body>
 </html>

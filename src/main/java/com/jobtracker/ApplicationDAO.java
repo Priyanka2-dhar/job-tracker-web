@@ -20,14 +20,33 @@ public class ApplicationDAO {
                 rs.getDate("follow_up_date").toLocalDate());
     }
 
-    public List<JobApplication> getAll() throws Exception {
+    // Search by company or role text, and/or filter by status. Empty values are ignored.
+    public List<JobApplication> search(String q, String status) throws Exception {
         List<JobApplication> list = new ArrayList<>();
-        String sql = "SELECT id, company, role, applied_date, status, follow_up_date "
-                + "FROM applications ORDER BY id";
+        StringBuilder sql = new StringBuilder(
+                "SELECT id, company, role, applied_date, status, follow_up_date "
+                        + "FROM applications WHERE 1=1");
+        List<String> params = new ArrayList<>();
+
+        if (q != null && !q.isBlank()) {
+            sql.append(" AND (company LIKE ? OR role LIKE ?)");
+            params.add("%" + q.trim() + "%");
+            params.add("%" + q.trim() + "%");
+        }
+        if (status != null && !status.isBlank()) {
+            sql.append(" AND status = ?");
+            params.add(status);
+        }
+        sql.append(" ORDER BY id");
+
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) list.add(mapRow(rs));
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setString(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
         }
         return list;
     }
